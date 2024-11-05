@@ -3,7 +3,7 @@ import { StyleSheet, SafeAreaView, View, Image, Text, TextInput, TouchableOpacit
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { useState } from 'react';
-import { useRouter } from 'expo-router';
+
 
 
 type SignInProps = {
@@ -11,7 +11,6 @@ type SignInProps = {
 }
 
 export default function SignIn({ setLogged } : SignInProps) {
-  const router = useRouter()
   const colorScheme = useColorScheme();
   const [form, setForm] = useState({
     email: '',

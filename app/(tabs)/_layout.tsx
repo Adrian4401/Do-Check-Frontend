@@ -5,15 +5,23 @@ import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 
+import "react-native-gesture-handler";
+
+
+
 export default function TabLayout() {
   const colorScheme = useColorScheme();
 
   return (
     <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].primary,
+      screenOptions={({ route }) => ({
+        tabBarStyle: {
+          display: route.name === 'addTask' ? 'none' : 'flex',
+        },
         headerShown: false,
-      }}>
+        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].primary,
+      })}
+      >
       <Tabs.Screen
         name="index"
         options={{
@@ -33,7 +41,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="addTask"
+        name='addTask'
         options={{
           title: 'Dodaj zadanie',
           tabBarIcon: ({ color, focused }) => (

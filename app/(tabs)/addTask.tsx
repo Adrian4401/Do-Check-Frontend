@@ -6,6 +6,7 @@ import { ExternalLink } from '@/components/ExternalLink';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import GoBackBtn from '@/components/buttons';
 
 export default function TabTwoScreen() {
   return (
@@ -13,6 +14,7 @@ export default function TabTwoScreen() {
       headerBackgroundColor={{ light: '#040046', dark: '#040046' }}
       headerImage={<Ionicons size={310} name="add" style={styles.headerImage} />}>
       <ThemedView style={styles.titleContainer}>
+        <GoBackBtn />
         <ThemedText type="title">Dodaj zadanie</ThemedText>
       </ThemedView>
       <ThemedText>This app includes example code to help you get started.</ThemedText>

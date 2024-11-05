@@ -33,6 +33,15 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="addTask"
+        options={{
+          title: 'Dodaj zadanie',
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'add-circle' : 'add-circle'} color={color} style={{}}/>
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="undone"
         options={{
           title: 'Niewykonane',

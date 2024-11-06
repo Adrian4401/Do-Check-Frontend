@@ -1,4 +1,4 @@
-import { StyleSheet, TextInput, View, Text, Keyboard, TouchableOpacity } from 'react-native';
+import { StyleSheet, TextInput, View, Text, Keyboard, TouchableOpacity, Image } from 'react-native';
 import { useEffect, useState } from 'react';
 
 import ParallaxScrollView from '@/components/ParallaxScrollView';
@@ -14,6 +14,9 @@ import RNDateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment-timezone';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { Dropdown } from 'react-native-element-dropdown';
+import * as DocumentPicker from 'expo-document-picker';
+import * as ImagePicker from 'expo-image-picker';
+
 
 
 
@@ -35,12 +38,51 @@ export default function TabTwoScreen() {
     desc: ''
   })
 
+  const [image, setImage] = useState<string | null>(null);
+  const [file, setFile] = useState<{ uri: string; name: string } | null>(null);
+
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [16, 9],
+      quality: 1,
+    });
+
+    console.log(result);
+
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+    }
+  };
+
+  const clearImage = () => {
+    setImage(null);
+  }
+
+  const pickDocument = async () => {
+    let result = await DocumentPicker.getDocumentAsync({
+      copyToCacheDirectory: true,
+    });
+
+    console.log(result);
+  
+    if (!result.canceled) {
+      setFile({uri: result.assets[0].uri, name: result.assets[0].name});
+    }
+  };
+
+  const clearFile = () => {
+    setFile(null);
+  }
+
   // Leave UTC format, change when is readed from DB
   // console.log('Local Date:', localDate.format());
 
   useEffect(() => {
     console.log('Wybrana data i godzina: ', form.date)
   })
+
   
   return (
     <ParallaxScrollView
@@ -132,16 +174,44 @@ export default function TabTwoScreen() {
             backgroundColor: Colors[colorScheme ?? 'light'].inputBg,
             borderBottomColor: Colors[colorScheme ?? 'light'].primary
           }}>
-          <TouchableOpacity style={styles.typeBtn}>
+          <TouchableOpacity onPress={pickDocument} style={styles.typeBtn}>
             <Ionicons name="document-attach" size={24} color="black" />
             <Text style={styles.attachLabel}>Dodaj załączniki</Text>
           </TouchableOpacity>
           <View style={{...styles.line, backgroundColor: Colors[colorScheme ?? 'light'].primary}} />
-          <TouchableOpacity style={styles.typeBtn}>
+          <TouchableOpacity onPress={pickImage} style={styles.typeBtn}>
             <Ionicons name="image" size={24} color="black" />
             <Text style={styles.attachLabel}>Dodaj zdjęcia</Text>
           </TouchableOpacity>
         </TouchableOpacity>
+
+        {file && 
+          <>
+            <View style={styles.attachContainer}>
+              <View style={styles.attachHeader}>
+                <Text style={{...styles.themedText, marginTop: 0, color: Colors[colorScheme ?? 'light'].text}}>Wybrane załączniki</Text>
+                <Text onPress={clearFile} style={{...styles.clearBtn, color: Colors[colorScheme ?? 'light'].text}}>Wyczyść</Text>
+              </View>
+              <View style={{...styles.fileContainer, backgroundColor: Colors[colorScheme ?? 'light'].inputBg}}>
+                <Ionicons name="document-attach" size={24} color="black" />
+                <Text style={{...styles.attachLabel, color: Colors[colorScheme ?? 'light'].text}}>{ file.name }</Text>                 
+              </View>
+            </View>
+          </>
+        }
+
+        {image && 
+          <>
+            <View style={styles.attachContainer}>
+              <View style={styles.attachHeader}>
+                <Text style={{...styles.themedText, marginTop: 0, color: Colors[colorScheme ?? 'light'].text}}>Wybrane zdjęcia</Text>
+                <Text onPress={clearImage} style={{...styles.clearBtn, color: Colors[colorScheme ?? 'light'].text}}>Wyczyść</Text>
+              </View>
+              <Image source={{ uri: image }} style={styles.image} />
+            </View>
+          </>
+        }
+
       </View>
       
     </ParallaxScrollView>
@@ -234,7 +304,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
     borderWidth: 2,
     justifyContent: 'center',
-    gap: 10
+    gap: 15
   },
   attachLabel: {
     fontSize: 16
@@ -247,8 +317,34 @@ const styles = StyleSheet.create({
     gap: 10,
     height: 44,
   },
+  clearBtn: {
+    fontSize: 16
+  },
   line: {
     width: 2,
     height: 30
+  },
+
+  image: {
+    height: 200,
+    borderRadius: 15
+  },
+  attachContainer: {
+    flexDirection: 'column',
+    gap: 10,
+    marginTop: 20
+  },
+  attachHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between'
+  },
+  fileContainer: {
+    height: 50,
+    borderRadius: 8,
+    paddingHorizontal: 8,
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 10
   }
 });

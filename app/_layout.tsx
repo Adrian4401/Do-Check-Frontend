@@ -16,7 +16,7 @@ export default function RootLayout() {
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
-  const [logged, setLogged] = useState(false);
+  const [logged, setLogged] = useState(true);
 
   useEffect(() => {
     if (loaded) {

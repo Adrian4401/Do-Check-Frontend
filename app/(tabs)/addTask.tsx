@@ -17,6 +17,7 @@ import { Dropdown } from 'react-native-element-dropdown';
 import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
 
+import axios from 'axios';
 
 
 
@@ -78,6 +79,24 @@ export default function TabTwoScreen() {
 
   // Leave UTC format, change when is readed from DB
   // console.log('Local Date:', localDate.format());
+
+  const handleSubmit = async () => {
+    try {
+      const response = await axios.post(`http://192.168.0.24:3000/task/add-task`, {
+        User_ID: 'marian12',
+        Task_title: form.title,
+        Task_due_date: form.date,
+        Task_desc: form.desc,
+        Task_refresh: false,
+        Task_refresh_rate: null
+      });
+      if (response.status === 200) {
+        console.log('Udalo sie dodac zadanie!')
+      }
+    } catch (error) {
+      console.log('Nie udalo sie dodac zadania -> ', error)
+    }
+  }
 
   useEffect(() => {
     console.log('Wybrana data i godzina: ', form.date)
@@ -212,8 +231,12 @@ export default function TabTwoScreen() {
           </>
         }
 
+        <TouchableOpacity onPress={handleSubmit} style={{...styles.addBtn, backgroundColor: Colors[colorScheme ?? 'light'].primary}}>
+          <Text style={{...styles.addBtnText, color: Colors[colorScheme ?? 'light'].lightText}}>Dodaj</Text>
+        </TouchableOpacity>
+
       </View>
-      
+
     </ParallaxScrollView>
   );
 }
@@ -346,5 +369,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     gap: 10
+  },
+
+  addBtn: {
+    alignItems: 'center',
+    padding: 12,
+    borderRadius: 10,
+    marginTop: 50
+  },
+  addBtnText: {
+    fontSize: 20,
+    fontWeight: 600
   }
 });

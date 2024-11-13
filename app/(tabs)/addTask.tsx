@@ -1,4 +1,4 @@
-import { StyleSheet, TextInput, View, Text, Keyboard, TouchableOpacity, Image } from 'react-native';
+import { StyleSheet, TextInput, View, Text, TouchableOpacity, Image } from 'react-native';
 import { useEffect, useState } from 'react';
 
 import ParallaxScrollView from '@/components/ParallaxScrollView';
@@ -17,6 +17,7 @@ import * as ImagePicker from 'expo-image-picker';
 
 import axios from 'axios';
 import { useNavigation } from 'expo-router';
+import moment from 'moment';
 
 
 
@@ -81,13 +82,13 @@ export default function TabTwoScreen() {
   // console.log('Local Date:', localDate.format());
 
   const handleSubmit = async () => {
-    // const formattedDate = moment(form.date).format('YYYY-MM-DD');
+    const formattedDate = moment(form.date).format('YYYY-MM-DD');
 
     try {
       const response = await axios.post(`http://172.20.10.5:3000/task/add-task`, {
         User_ID: 1,
         Task_title: form.title,
-        Task_due_date: form.date,
+        Task_due_date: formattedDate,
         Task_desc: form.desc,
         Task_refresh: false,
         Task_refresh_rate: null
@@ -132,6 +133,7 @@ export default function TabTwoScreen() {
           placeholderTextColor={Colors[colorScheme ?? 'light'].text}
           value={form.title}
           onChangeText={title => setForm({...form, title})}
+          maxLength={60}
         />
         <RNDateTimePicker
           mode='date'

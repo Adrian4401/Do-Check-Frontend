@@ -1,4 +1,4 @@
-import { FlatList, Image, StyleSheet, Text, View } from 'react-native';
+import { Image, ImageBackground, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 
 import { HelloWave } from '@/components/HelloWave';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
@@ -7,8 +7,10 @@ import { ThemedView } from '@/components/ThemedView';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import React from 'react';
-import { useFocusEffect } from '@react-navigation/native';
 import { useNavigation } from 'expo-router';
+import moment from 'moment';
+import { useColorScheme } from '@/hooks/useColorScheme';
+import { Colors } from '@/constants/Colors';
 
 
 interface Task {
@@ -24,6 +26,7 @@ interface Task {
 
 export default function HomeScreen() {
   const navigation = useNavigation();
+  const colorScheme = useColorScheme();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -58,14 +61,6 @@ export default function HomeScreen() {
     console.log(tasks);
   }, [tasks]);
 
-  const renderTask = ({ item } : {item: Task}) => (
-    <View>
-      <Text>Tytuł: {item.Task_title}</Text>
-      <Text>Opis: {item.Task_desc}</Text>
-      <Text>Termin: {item.Task_due_date}</Text>
-    </View>
-  );
-
   
   return (
     <ParallaxScrollView
@@ -77,19 +72,26 @@ export default function HomeScreen() {
         />
       }
       >
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Wszystkie zadania!</ThemedText>
-        <HelloWave />
-      </ThemedView>
+      <ThemedText type="title">Wszystkie zadania!</ThemedText>
 
       {loading ? (
         <Text>Ładowanie...</Text>
       ) : (
         tasks.map((task) => {
+          const formattedDate = moment(task.Task_due_date).format('DD.MM.YYYY');
           return(
-            <View key={task.Task_ID}>
-              <Text>Task title: {task.Task_title}</Text>
-            </View>
+            <TouchableOpacity key={task.Task_ID}>
+              <ImageBackground
+                source={require('../../assets/images/sticky-note.png')}
+                resizeMode='contain'
+                style={styles.stickynote}
+              >
+                <View style={styles.taskTitleView}>
+                  <Text style={styles.taskTitle}>{task.Task_title}</Text>
+                </View>
+                <Text style={{...styles.taskDate, color: Colors[colorScheme ?? 'light'].darkText, shadowColor: Colors[colorScheme ?? 'light'].inputBg}}>{formattedDate}</Text>
+              </ImageBackground>
+            </TouchableOpacity>
           )
         })
       )}
@@ -115,4 +117,32 @@ const styles = StyleSheet.create({
     left: 0,
     position: 'absolute',
   },
+
+  stickynote: {
+    flex: 1,
+    height: 150,
+    paddingLeft: 35,
+    paddingRight: 30,
+    paddingTop: 70,
+    paddingBottom: 5,
+    justifyContent: 'space-between',
+    shadowOpacity: 0.3,
+    shadowRadius: 2,
+    shadowOffset: {
+      height: 5,
+      width: 5
+    }
+  },
+  taskTitleView: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  taskTitle: {
+    fontSize: 18
+  },
+  taskDate: {
+    textAlign: 'right'
+  }
 });

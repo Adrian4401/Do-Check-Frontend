@@ -10,6 +10,7 @@ export const Colors = {
   light: {
     text: '#11181C',
     lightText: '#E1DFDF',
+    darkText: '#687076',
     background: '#EBE9E9',
     inputBg: '#F3F0F0',
     tint: tintColorLight,
@@ -24,6 +25,7 @@ export const Colors = {
   dark: {
     text: '#ECEDEE',
     lightText: '#E1DFDF',
+    darkText: '#687076',
     background: '#151718',
     inputBg: '#F3F0F0',
     tint: tintColorDark,

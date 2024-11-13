@@ -81,11 +81,13 @@ export default function TabTwoScreen() {
   // console.log('Local Date:', localDate.format());
 
   const handleSubmit = async () => {
+    const formattedDate = moment(form.date).format('YYYY-MM-DD');
+
     try {
-      const response = await axios.post(`http://192.168.0.24:3000/task/add-task`, {
-        User_ID: 'marian12',
+      const response = await axios.post(`http://172.20.10.5:3000/task/add-task`, {
+        User_ID: 1,
         Task_title: form.title,
-        Task_due_date: form.date,
+        Task_due_date: formattedDate,
         Task_desc: form.desc,
         Task_refresh: false,
         Task_refresh_rate: null
@@ -95,6 +97,7 @@ export default function TabTwoScreen() {
       }
     } catch (error) {
       console.log('Nie udalo sie dodac zadania -> ', error)
+      console.log('Dane: title: ', form.title, 'date: ', formattedDate)
     }
   }
 
@@ -130,7 +133,7 @@ export default function TabTwoScreen() {
           onChangeText={title => setForm({...form, title})}
         />
         <RNDateTimePicker
-          mode='datetime'
+          mode='date'
           display='spinner'
           locale="pl-PL"
           minuteInterval={5}

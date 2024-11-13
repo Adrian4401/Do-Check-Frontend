@@ -1,11 +1,59 @@
-import { Image, StyleSheet, Platform } from 'react-native';
+import { FlatList, Image, StyleSheet, Text, View } from 'react-native';
 
 import { HelloWave } from '@/components/HelloWave';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
+
+
+interface Task {
+  Task_ID: number;
+  User_ID: number;
+  Task_title: string;
+  Task_due_date: string;
+  Task_desc: string;
+  Task_refresh: boolean;
+  Task_refresh_rate: number;
+  Task_done: boolean;
+}
 
 export default function HomeScreen() {
+  const [tasks, setTasks] = useState([]);
+  const [loading, setLoading] = useState(true);
+  
+  useEffect(() => {
+    const fetchTasks = async () => {
+      try {
+        const response = await axios.get(`http://172.20.10.5:3000/task/select-task`);
+        
+        if (response.status === 200) {
+          setTasks(response.data);
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error('Nie udało się pobrać danych: ', error);
+        setLoading(false);
+      }
+    };
+  
+    fetchTasks();
+  }, []);
+
+  useEffect(() => {
+    console.log(tasks);
+  }, [tasks]);
+
+  const renderTask = ({ item } : {item: Task}) => (
+    <View>
+      <Text>Tytuł: {item.Task_title}</Text>
+      <Text>Opis: {item.Task_desc}</Text>
+      <Text>Termin: {item.Task_due_date}</Text>
+    </View>
+  );
+
+  
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
@@ -17,37 +65,20 @@ export default function HomeScreen() {
       }
       >
       <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
+        <ThemedText type="title">Wszystkie zadania!</ThemedText>
         <HelloWave />
       </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({ ios: 'cmd + d', android: 'cmd + m' })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-        
-      </ThemedView>
+
+      {loading ? (
+        <Text>Ładowanie...</Text>
+      ) : (
+        <FlatList
+          data={tasks}
+          renderItem={renderTask}
+          keyExtractor={(item) => item.Task_ID.toString()}
+        />
+      )}
+
     </ParallaxScrollView>
   );
 }

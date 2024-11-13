@@ -6,6 +6,9 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import React from 'react';
+import { useFocusEffect } from '@react-navigation/native';
+import { useNavigation } from 'expo-router';
 
 
 interface Task {
@@ -20,26 +23,36 @@ interface Task {
 }
 
 export default function HomeScreen() {
-  const [tasks, setTasks] = useState([]);
+  const navigation = useNavigation();
+  const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
-  
-  useEffect(() => {
-    const fetchTasks = async () => {
-      try {
-        const response = await axios.get(`http://172.20.10.5:3000/task/select-task`);
-        
-        if (response.status === 200) {
-          setTasks(response.data);
-          setLoading(false);
-        }
-      } catch (error) {
-        console.error('Nie udało się pobrać danych: ', error);
+
+  const fetchTasks = async () => {
+    try {
+      const response = await axios.get(`http://172.20.10.5:3000/task/select-task`);
+      
+      if (response.status === 200) {
+        setTasks(response.data);
         setLoading(false);
       }
-    };
+    } catch (error) {
+      console.error('Nie udało się pobrać danych: ', error);
+      setLoading(false);
+    }
+  };
   
-    fetchTasks();
-  }, []);
+  useEffect(() => {
+    if(tasks === null){
+      fetchTasks();
+    }
+    else{
+      const unsubscribe = navigation.addListener('focus', () => {
+        fetchTasks(); // Wywołanie funkcji przy każdym powrocie na ten ekran
+      });
+  
+      return unsubscribe;
+    }
+  }, [navigation]);
 
   useEffect(() => {
     console.log(tasks);
@@ -72,11 +85,13 @@ export default function HomeScreen() {
       {loading ? (
         <Text>Ładowanie...</Text>
       ) : (
-        <FlatList
-          data={tasks}
-          renderItem={renderTask}
-          keyExtractor={(item) => item.Task_ID.toString()}
-        />
+        tasks.map((task) => {
+          return(
+            <View key={task.Task_ID}>
+              <Text>Task title: {task.Task_title}</Text>
+            </View>
+          )
+        })
       )}
 
     </ParallaxScrollView>

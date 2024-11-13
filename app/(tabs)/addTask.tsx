@@ -11,13 +11,12 @@ import { Colors } from '@/constants/Colors';
 
 import Ionicons from '@expo/vector-icons/Ionicons';
 import RNDateTimePicker from '@react-native-community/datetimepicker';
-import moment from 'moment-timezone';
-import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { Dropdown } from 'react-native-element-dropdown';
 import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
 
 import axios from 'axios';
+import { useNavigation } from 'expo-router';
 
 
 
@@ -29,6 +28,7 @@ const data = [
 ];
 
 export default function TabTwoScreen() {
+  const navigation = useNavigation();
   const colorScheme = useColorScheme();
   const [value, setValue] = useState<string | null>(null);
   const [isFocus, setIsFocus] = useState(false);
@@ -81,23 +81,24 @@ export default function TabTwoScreen() {
   // console.log('Local Date:', localDate.format());
 
   const handleSubmit = async () => {
-    const formattedDate = moment(form.date).format('YYYY-MM-DD');
+    // const formattedDate = moment(form.date).format('YYYY-MM-DD');
 
     try {
       const response = await axios.post(`http://172.20.10.5:3000/task/add-task`, {
         User_ID: 1,
         Task_title: form.title,
-        Task_due_date: formattedDate,
+        Task_due_date: form.date,
         Task_desc: form.desc,
         Task_refresh: false,
         Task_refresh_rate: null
       });
       if (response.status === 200) {
         console.log('Udalo sie dodac zadanie!')
+        navigation.goBack();
       }
     } catch (error) {
       console.log('Nie udalo sie dodac zadania -> ', error)
-      console.log('Dane: title: ', form.title, 'date: ', formattedDate)
+      console.log('Dane: title: ', form.title, 'date: ', form.date)
     }
   }
 

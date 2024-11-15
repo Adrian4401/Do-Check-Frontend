@@ -38,6 +38,6 @@ export default function RootLayout() {
       ) : (
         <SignIn setLogged={setLogged} />
       )}
-    </ThemeProvider>
+    </ThemeProvider>    
   );
 }

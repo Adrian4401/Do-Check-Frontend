@@ -1,15 +1,17 @@
-import { Image, ImageBackground, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { StyleSheet, useColorScheme, Text, TouchableOpacity, ImageBackground, View } from 'react-native';
 
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
+import { ThemedView } from '@/components/ThemedView';
 import { useEffect, useState } from 'react';
-import axios from 'axios';
-import React from 'react';
 import { useNavigation } from 'expo-router';
+import axios from 'axios';
 import moment from 'moment';
-import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
 
+
+const apiUrl = process.env.EXPO_PUBLIC_API_URL
 
 interface Task {
   Task_ID: number;
@@ -22,7 +24,7 @@ interface Task {
   Task_done: boolean;
 }
 
-export default function HomeScreen() {
+export default function Completed() {
   const navigation = useNavigation();
   const colorScheme = useColorScheme();
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -30,7 +32,7 @@ export default function HomeScreen() {
 
   const fetchTasks = async () => {
     try {
-      const response = await axios.get(`http://172.20.10.5:3000/task/select-task`);
+      const response = await axios.get(`${apiUrl}/task/select-completed-tasks/`);
       
       if (response.status === 200) {
         setTasks(response.data);
@@ -62,16 +64,12 @@ export default function HomeScreen() {
   
   return (
     <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }
-      >
-      <ThemedText type="title">Wszystkie zadania!</ThemedText>
-
+      headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
+      headerImage={<Ionicons size={310} name="code-slash" style={styles.headerImage} />}>
+      <ThemedView style={styles.titleContainer}>
+        <ThemedText type="title">Wykonane</ThemedText>
+      </ThemedView>
+      
       {loading ? (
         <Text>Ładowanie...</Text>
       ) : (
@@ -99,21 +97,15 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
+  headerImage: {
+    color: '#808080',
+    bottom: -90,
+    left: -35,
+    position: 'absolute',
+  },
   titleContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
     gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
   },
 
   stickynote: {

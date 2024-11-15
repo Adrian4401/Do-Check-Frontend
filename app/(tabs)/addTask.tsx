@@ -16,10 +16,12 @@ import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
 
 import axios from 'axios';
-import { useNavigation } from 'expo-router';
+import { useRouter } from 'expo-router';
 import moment from 'moment';
 
 
+
+const apiUrl = process.env.EXPO_PUBLIC_API_URL;
 
 const data = [
   { label: 'Codziennie', value: '1' },
@@ -29,7 +31,7 @@ const data = [
 ];
 
 export default function TabTwoScreen() {
-  const navigation = useNavigation();
+  const router = useRouter();
   const colorScheme = useColorScheme();
   const [value, setValue] = useState<string | null>(null);
   const [isFocus, setIsFocus] = useState(false);
@@ -85,7 +87,7 @@ export default function TabTwoScreen() {
     const formattedDate = moment(form.date).format('YYYY-MM-DD');
 
     try {
-      const response = await axios.post(`http://172.20.10.5:3000/task/add-task`, {
+      const response = await axios.post(`${apiUrl}/task/add-task`, {
         User_ID: 1,
         Task_title: form.title,
         Task_due_date: formattedDate,
@@ -95,7 +97,7 @@ export default function TabTwoScreen() {
       });
       if (response.status === 200) {
         console.log('Udalo sie dodac zadanie!')
-        navigation.goBack();
+        router.back();
       }
     } catch (error) {
       console.log('Nie udalo sie dodac zadania -> ', error)

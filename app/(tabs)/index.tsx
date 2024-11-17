@@ -1,15 +1,20 @@
-import { Image, ImageBackground, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { ImageBackground, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import React from 'react';
 import { useNavigation } from 'expo-router';
 import moment from 'moment';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
+import { EmptySection } from '@/components/emptySection';
+import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 
+
+
+const apiUrl = process.env.EXPO_PUBLIC_API_URL
 
 interface Task {
   Task_ID: number;
@@ -27,18 +32,25 @@ export default function HomeScreen() {
   const colorScheme = useColorScheme();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
+  const [tasksInfo, setTasksInfo] = useState(false);
 
   const fetchTasks = async () => {
     try {
-      const response = await axios.get(`http://172.20.10.5:3000/task/select-task`);
+      const response = await axios.get(`${apiUrl}/task/select-task`);
       
       if (response.status === 200) {
         setTasks(response.data);
         setLoading(false);
       }
     } catch (error) {
-      console.error('Nie udało się pobrać danych: ', error);
-      setLoading(false);
+      const axiosError = error as AxiosError
+
+      if(axiosError.response && axiosError.response.status === 404) {
+        setLoading(false);
+        setTasksInfo(true)
+      } else {
+        console.error('Nie udało się pobrać danych: ', axiosError.message);
+      }
     }
   };
   
@@ -63,14 +75,9 @@ export default function HomeScreen() {
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }
+      headerImage={<FontAwesome5 name="tasks" size={250} style={styles.headerImage} />}
       >
-      <ThemedText type="title">Wszystkie zadania!</ThemedText>
+      <ThemedText type="title">Zadania</ThemedText>
 
       {loading ? (
         <Text>Ładowanie...</Text>
@@ -94,6 +101,10 @@ export default function HomeScreen() {
         })
       )}
 
+      {tasksInfo && tasks && (
+        <EmptySection />
+      )}
+
     </ParallaxScrollView>
   );
 }
@@ -108,11 +119,10 @@ const styles = StyleSheet.create({
     gap: 8,
     marginBottom: 8,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
+  headerImage: {
+    color: '#808080',
+    bottom: -90,
+    left: -10,
     position: 'absolute',
   },
 

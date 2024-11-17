@@ -1,4 +1,3 @@
-import Ionicons from '@expo/vector-icons/Ionicons';
 import { StyleSheet, useColorScheme, Text, TouchableOpacity, ImageBackground, View } from 'react-native';
 
 import ParallaxScrollView from '@/components/ParallaxScrollView';
@@ -6,9 +5,11 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useEffect, useState } from 'react';
 import { useNavigation } from 'expo-router';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import moment from 'moment';
 import { Colors } from '@/constants/Colors';
+import { EmptySection } from '@/components/emptySection';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 
 const apiUrl = process.env.EXPO_PUBLIC_API_URL
@@ -29,6 +30,7 @@ export default function Completed() {
   const colorScheme = useColorScheme();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
+  const [tasksInfo, setTasksInfo] = useState(false);
 
   const fetchTasks = async () => {
     try {
@@ -38,9 +40,18 @@ export default function Completed() {
         setTasks(response.data);
         setLoading(false);
       }
+      if (response.status === 404) {
+        setLoading(false);
+      }
     } catch (error) {
-      console.error('Nie udało się pobrać danych: ', error);
-      setLoading(false);
+      const axiosError = error as AxiosError
+
+      if(axiosError.response && axiosError.response.status === 404) {
+        setLoading(false);
+        setTasksInfo(true)
+      } else {
+        console.error('Nie udało się pobrać danych: ', axiosError.message);
+      }
     }
   };
   
@@ -64,8 +75,9 @@ export default function Completed() {
   
   return (
     <ParallaxScrollView
-      headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
-      headerImage={<Ionicons size={310} name="code-slash" style={styles.headerImage} />}>
+      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
+      headerImage={<MaterialIcons name="task-alt" size={250} style={styles.headerImage} />
+      }>
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title">Wykonane</ThemedText>
       </ThemedView>
@@ -90,6 +102,10 @@ export default function Completed() {
             </TouchableOpacity>
           )
         })
+      )}
+
+      {tasksInfo && tasks && (
+        <EmptySection />
       )}
 
     </ParallaxScrollView>

@@ -36,6 +36,27 @@ export default function TaskInfo() {
   const [loading, setLoading] = useState(true);
   const [task, setTask] = useState<Task | null>(null);
 
+  const completeTask = async () => {
+    try {
+      const response = await axios.post(`${apiUrl}/task/complete-task`, {
+        Task_ID: taskID
+      });
+      
+      if (response.status === 200) {
+        console.log("Udało się zakończyć")
+        router.back()
+      }
+    } catch (error) {
+      const axiosError = error as AxiosError
+
+      if(axiosError.response && axiosError.response.status === 404) {
+        setLoading(false);
+      } else {
+        console.error('Nie udało się zakończyć zadania: ', axiosError.message);
+      }
+    }
+  };
+
   const fetchTask = async () => {
     try {
       const response = await axios.get(`${apiUrl}/task/select-task`, {
@@ -101,7 +122,9 @@ export default function TaskInfo() {
             <Text style={styles.taskDate}>{moment(task.Task_due_date).format('DD.MM.YYYY')}</Text>
           </View>
           <Text style={styles.sectionText}>Załączniki</Text>
-          <TouchableOpacity style={{...styles.finishButton, backgroundColor: Colors[colorScheme ?? 'light'].primary}}>
+          <TouchableOpacity 
+            onPress={completeTask}
+            style={{...styles.finishButton, backgroundColor: Colors[colorScheme ?? 'light'].primary}}>
             <Text style={styles.buttonText}>Zakończ</Text>
           </TouchableOpacity>
           {/* <Text>Przekazane ID: {taskID}</Text>

@@ -30,7 +30,7 @@ const data = [
   { label: 'Brak', value: '4' },
 ];
 
-export default function addTask() {
+export default function taskForm() {
   const router = useRouter();
   const colorScheme = useColorScheme();
   const [value, setValue] = useState<string | null>(null);

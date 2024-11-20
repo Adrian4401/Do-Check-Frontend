@@ -16,11 +16,12 @@ export default function TabLayout() {
     <Tabs
       screenOptions={({ route }) => ({
         tabBarStyle: {
-          display: route.name === 'addTask' ? 'none' : 'flex',
+          display: route.name === 'task-form' ? 'none' : 'flex',
         },
         headerShown: false,
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].primary,
       })}
+      backBehavior='history'
       >
       <Tabs.Screen
         name="index"
@@ -41,11 +42,11 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name='add-task'
+        name='task-form'
         options={{
           title: 'Dodaj',
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'add-circle' : 'add-circle'} color={color} style={{}}/>
+            <TabBarIcon name={focused ? 'add-circle' : 'add-circle'} color={color} />
           ),
         }}
       />

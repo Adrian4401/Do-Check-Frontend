@@ -1,4 +1,4 @@
-import { StyleSheet, Text } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
@@ -6,10 +6,13 @@ import { ThemedView } from '@/components/ThemedView';
 import Entypo from '@expo/vector-icons/Entypo';
 import GoBackBtn from '@/components/buttons';
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'expo-router/build/hooks';
+import { useRouter, useSearchParams } from 'expo-router/build/hooks';
 import axios, { AxiosError } from 'axios';
-import { useNavigation } from 'expo-router';
 import moment from 'moment';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { Colors } from '@/constants/Colors';
+import { useColorScheme } from '@/hooks/useColorScheme';
 
 
 
@@ -24,7 +27,8 @@ interface Task {
 }
 
 export default function TaskInfo() {
-  const navigation = useNavigation()
+  const router = useRouter()
+  const colorScheme = useColorScheme()
 
   const params = useSearchParams();
   const taskID = params.get('Task_ID');
@@ -73,20 +77,39 @@ export default function TaskInfo() {
       }>
 
       <ThemedView style={styles.titleContainer}>
-        <GoBackBtn />
-        <ThemedText type="title">Informacje</ThemedText>
+        <View style={styles.header}>
+          <GoBackBtn />
+          <View style={styles.utilityButtons}>
+            <TouchableOpacity>
+              <MaterialIcons name="delete" size={30} color="#EB2D2D" />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => router.push('/task-form')}>
+              <MaterialIcons name="edit" size={30} color="black" />
+            </TouchableOpacity>
+          </View>
+        </View>
+        <ThemedText type="title">{task?.Task_title}</ThemedText>
       </ThemedView>
 
       {loading ? (
-      <Text>Ładowanie...</Text>
+        <Text>Ładowanie...</Text>
       ) : task && (
         <>
-          <Text>Przekazane ID: {taskID}</Text>
+          <Text style={styles.taskDesc}>{task.Task_desc}</Text>
+          <View style={styles.dateContainer}>
+            <Ionicons name="calendar-clear" size={20} color="black" />
+            <Text style={styles.taskDate}>{moment(task.Task_due_date).format('DD.MM.YYYY')}</Text>
+          </View>
+          <Text style={styles.sectionText}>Załączniki</Text>
+          <TouchableOpacity style={{...styles.finishButton, backgroundColor: Colors[colorScheme ?? 'light'].primary}}>
+            <Text style={styles.buttonText}>Zakończ</Text>
+          </TouchableOpacity>
+          {/* <Text>Przekazane ID: {taskID}</Text>
           <Text>ID zadania: {task.Task_ID}</Text>
           <Text>Tytuł: {task.Task_title}</Text>
           <Text>Termin: {moment(task.Task_due_date).format('DD.MM.YYYY')}</Text>
           <Text>ID Użytkownika: {task.User_ID}</Text>
-          <Text>Opis: {task.Task_desc}</Text>
+          <Text>Opis: {task.Task_desc}</Text> */}
         </>
       )}
       
@@ -105,4 +128,40 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     gap: 20,
   },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  },
+  utilityButtons: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 30
+  },
+  taskDesc: {
+    fontSize: 18
+  },
+  dateContainer: {
+    flexDirection: 'row',
+    gap: 10,
+    alignItems: 'center'
+  },
+  taskDate: {
+    fontSize: 16
+  },
+  sectionText: {
+    fontSize: 20,
+    fontWeight: 500,
+    marginVertical: 20
+  },
+  finishButton: {
+    alignItems: 'center',
+    paddingVertical: 15,
+    borderRadius: 7
+  },
+  buttonText: {
+    fontSize: 20,
+    fontWeight: 500,
+    color: 'white'
+  }
 });

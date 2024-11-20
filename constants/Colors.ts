@@ -20,7 +20,8 @@ export const Colors = {
 
     primary: '#655ff0',
     secondary: '#6ee2f5',
-    splashbg: '#040046'
+    splashbg: '#040046',
+    appred: '#EB2D2D',
   },
   dark: {
     text: '#ECEDEE',
@@ -35,6 +36,7 @@ export const Colors = {
 
     primary: '#655ff0',
     secondary: '#6ee2f5',
-    splashbg: '#040046'
+    splashbg: '#040046',
+    appred: '#EB2D2D',
   },
 };

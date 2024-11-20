@@ -11,7 +11,6 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
 import { EmptySection } from '@/components/emptySection';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
-import { push } from 'expo-router/build/global-state/routing';
 
 
 
@@ -86,7 +85,13 @@ export default function HomeScreen() {
         tasks.map((task) => {
           const formattedDate = moment(task.Task_due_date).format('DD.MM.YYYY');
           return(
-            <TouchableOpacity onPress={taskInfo} key={task.Task_ID}>
+            <TouchableOpacity 
+              onPress={() => router.push({ 
+                pathname: '/task-info', 
+                params: { Task_ID: task.Task_ID } 
+              })} 
+              key={task.Task_ID}
+            >
               <ImageBackground
                 source={require('../../assets/images/sticky-note.png')}
                 resizeMode='contain'

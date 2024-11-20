@@ -19,10 +19,6 @@ interface Task {
   User_ID: number;
   Task_title: string;
   Task_due_date: string;
-  Task_desc: string;
-  Task_refresh: boolean;
-  Task_refresh_rate: number;
-  Task_done: boolean;
 }
 
 export default function Completed() {

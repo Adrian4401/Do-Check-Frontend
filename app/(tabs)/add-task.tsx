@@ -30,7 +30,7 @@ const data = [
   { label: 'Brak', value: '4' },
 ];
 
-export default function TabTwoScreen() {
+export default function addTask() {
   const router = useRouter();
   const colorScheme = useColorScheme();
   const [value, setValue] = useState<string | null>(null);

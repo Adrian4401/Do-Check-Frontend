@@ -5,12 +5,13 @@ import { ThemedText } from '@/components/ThemedText';
 import { useEffect, useState } from 'react';
 import axios, { AxiosError } from 'axios';
 import React from 'react';
-import { useNavigation } from 'expo-router';
+import { router, useNavigation } from 'expo-router';
 import moment from 'moment';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
 import { EmptySection } from '@/components/emptySection';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
+import { push } from 'expo-router/build/global-state/routing';
 
 
 
@@ -21,10 +22,6 @@ interface Task {
   User_ID: number;
   Task_title: string;
   Task_due_date: string;
-  Task_desc: string;
-  Task_refresh: boolean;
-  Task_refresh_rate: number;
-  Task_done: boolean;
 }
 
 export default function HomeScreen() {
@@ -71,6 +68,10 @@ export default function HomeScreen() {
     console.log(tasks);
   }, [tasks]);
 
+  const taskInfo = () => {
+    return router.push('/task-info')
+  }
+
   
   return (
     <ParallaxScrollView
@@ -85,7 +86,7 @@ export default function HomeScreen() {
         tasks.map((task) => {
           const formattedDate = moment(task.Task_due_date).format('DD.MM.YYYY');
           return(
-            <TouchableOpacity key={task.Task_ID}>
+            <TouchableOpacity onPress={taskInfo} key={task.Task_ID}>
               <ImageBackground
                 source={require('../../assets/images/sticky-note.png')}
                 resizeMode='contain'
@@ -123,7 +124,7 @@ const styles = StyleSheet.create({
     color: '#808080',
     bottom: -90,
     left: -10,
-    position: 'absolute',
+    position: 'absolute'
   },
 
   stickynote: {

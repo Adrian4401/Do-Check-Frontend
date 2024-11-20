@@ -41,7 +41,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name='addTask'
+        name='add-task'
         options={{
           title: 'Dodaj',
           tabBarIcon: ({ color, focused }) => (

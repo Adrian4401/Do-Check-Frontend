@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
@@ -19,11 +19,14 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 const apiUrl = process.env.EXPO_PUBLIC_API_URL
 
 interface Task {
-  Task_ID: number;
-  User_ID: number;
-  Task_title: string;
-  Task_due_date: string;
-  Task_desc: string
+  // Task_ID: number;
+  // User_ID: number;
+  Title: string;
+  Due_date: string;
+  Descript: string;
+  Name: string | null;
+  Path: string | null;
+  Type: string | null;
 }
 
 export default function TaskInfo() {
@@ -35,27 +38,6 @@ export default function TaskInfo() {
 
   const [loading, setLoading] = useState(true);
   const [task, setTask] = useState<Task | null>(null);
-
-  const completeTask = async () => {
-    try {
-      const response = await axios.post(`${apiUrl}/task/complete-task`, {
-        Task_ID: taskID
-      });
-      
-      if (response.status === 200) {
-        console.log("Udało się zakończyć")
-        router.back()
-      }
-    } catch (error) {
-      const axiosError = error as AxiosError
-
-      if(axiosError.response && axiosError.response.status === 404) {
-        setLoading(false);
-      } else {
-        console.error('Nie udało się zakończyć zadania: ', axiosError.message);
-      }
-    }
-  };
 
   const fetchTask = async () => {
     try {
@@ -90,6 +72,28 @@ export default function TaskInfo() {
     console.log(task);
   }, [task]);
 
+  const completeTask = async () => {
+    console.log('Przycisk został wciśnięty');
+
+    try {
+      const response = await axios.put(`${apiUrl}/task/complete-task`, {
+        Task_ID: taskID
+      });
+      if (response.status === 200) {
+        console.log("Udało się zakończyć")
+        router.back()
+      }
+    } catch (error) {
+      const axiosError = error as AxiosError
+      console.log('Wystąpił błąd przy kończeniu ogłoszenia')
+      if(axiosError.response && axiosError.response.status === 404) {
+        console.log('Błąd 404')
+      } else {
+        console.error('Nie udało się zakończyć zadania: ', axiosError.message);
+      }
+    }
+  };
+
 
   return (
     <ParallaxScrollView
@@ -109,30 +113,37 @@ export default function TaskInfo() {
             </TouchableOpacity>
           </View>
         </View>
-        <ThemedText type="title">{task?.Task_title}</ThemedText>
+        <ThemedText type="title">{task?.Title}</ThemedText>
       </ThemedView>
 
       {loading ? (
         <Text>Ładowanie...</Text>
       ) : task && (
         <>
-          <Text style={styles.taskDesc}>{task.Task_desc}</Text>
           <View style={styles.dateContainer}>
             <Ionicons name="calendar-clear" size={20} color="black" />
-            <Text style={styles.taskDate}>{moment(task.Task_due_date).format('DD.MM.YYYY')}</Text>
+            <Text style={styles.taskDate}>{moment(task.Due_date).format('DD.MM.YYYY')}</Text>
           </View>
-          <Text style={styles.sectionText}>Załączniki</Text>
+          {task.Descript ? (
+            <Text style={styles.taskDesc}>{task.Descript}</Text>
+          ) : (
+            <Text style={styles.taskDesc}>Brak opisu</Text>
+          )}
+          {task.Path && (
+            <>
+              <Text style={styles.sectionText}>Załączniki</Text>
+              <Image
+                source={{ uri: `${apiUrl}/${task.Path.replace('\\', '/')}` }} 
+                style={styles.attachmentImage}
+              />
+            </>
+          )}
           <TouchableOpacity 
             onPress={completeTask}
             style={{...styles.finishButton, backgroundColor: Colors[colorScheme ?? 'light'].primary}}>
             <Text style={styles.buttonText}>Zakończ</Text>
           </TouchableOpacity>
-          {/* <Text>Przekazane ID: {taskID}</Text>
-          <Text>ID zadania: {task.Task_ID}</Text>
-          <Text>Tytuł: {task.Task_title}</Text>
-          <Text>Termin: {moment(task.Task_due_date).format('DD.MM.YYYY')}</Text>
-          <Text>ID Użytkownika: {task.User_ID}</Text>
-          <Text>Opis: {task.Task_desc}</Text> */}
+          
         </>
       )}
       
@@ -180,11 +191,18 @@ const styles = StyleSheet.create({
   finishButton: {
     alignItems: 'center',
     paddingVertical: 15,
-    borderRadius: 7
+    borderRadius: 7,
+    marginTop: 20,
+    marginBottom: 100
   },
   buttonText: {
     fontSize: 20,
     fontWeight: 500,
     color: 'white'
-  }
+  },
+  attachmentImage: {
+    flex: 1,
+    aspectRatio: 16/9,
+    marginBottom: 10,
+  },
 });

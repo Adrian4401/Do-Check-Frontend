@@ -51,25 +51,15 @@ export default function HomeScreen() {
   };
   
   useEffect(() => {
-    if(tasks === null){
-      fetchTasks();
-    }
-    else{
-      const unsubscribe = navigation.addListener('focus', () => {
-        fetchTasks();
-      });
-  
-      return unsubscribe;
-    }
+    const loadData = navigation.addListener('focus', () => {
+      fetchTasks()
+    })
+    return loadData;
   }, [navigation]);
 
   useEffect(() => {
     console.log(tasks);
   }, [tasks]);
-
-  const taskInfo = () => {
-    return router.push('/task-info')
-  }
 
   
   return (

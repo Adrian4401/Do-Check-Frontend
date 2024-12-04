@@ -4,7 +4,7 @@ import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useEffect, useState } from 'react';
-import { useNavigation } from 'expo-router';
+import { router, useNavigation } from 'expo-router';
 import axios, { AxiosError } from 'axios';
 import moment from 'moment';
 import { Colors } from '@/constants/Colors';
@@ -81,7 +81,13 @@ export default function Undone() {
         tasks.map((task) => {
           const formattedDate = moment(task.Due_date).format('DD.MM.YYYY');
           return(
-            <TouchableOpacity key={task.Task_ID}>
+            <TouchableOpacity 
+              onPress={() => router.push({ 
+                pathname: '/task-info', 
+                params: { Task_ID: task.Task_ID } 
+              })} 
+              key={task.Task_ID}
+            >
               <ImageBackground
                 source={require('../../assets/images/sticky-note.png')}
                 resizeMode='contain'

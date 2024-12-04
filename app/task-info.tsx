@@ -13,6 +13,8 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { deleteTaskAlert } from '@/hooks/useManageTasks';
+
 
 
 
@@ -34,7 +36,7 @@ export default function TaskInfo() {
   const colorScheme = useColorScheme()
 
   const params = useSearchParams();
-  const taskID = params.get('Task_ID');
+  const taskID = parseInt(params.get('Task_ID') || '0', 10);
 
   const [loading, setLoading] = useState(true);
   const [task, setTask] = useState<Task | null>(null);
@@ -70,11 +72,10 @@ export default function TaskInfo() {
 
   useEffect(() => {
     console.log(task);
+    console.log('TaskID:', taskID)
   }, [task]);
 
   const completeTask = async () => {
-    console.log('Przycisk został wciśnięty');
-
     try {
       const response = await axios.put(`${apiUrl}/task/complete-task`, {
         Task_ID: taskID
@@ -85,9 +86,8 @@ export default function TaskInfo() {
       }
     } catch (error) {
       const axiosError = error as AxiosError
-      console.log('Wystąpił błąd przy kończeniu ogłoszenia')
       if(axiosError.response && axiosError.response.status === 404) {
-        console.log('Błąd 404')
+        console.log('Error 404')
       } else {
         console.error('Nie udało się zakończyć zadania: ', axiosError.message);
       }
@@ -106,10 +106,19 @@ export default function TaskInfo() {
           <GoBackBtn />
           <View style={styles.utilityButtons}>
             <TouchableOpacity>
-              <MaterialIcons name="delete" size={30} color="#EB2D2D" />
+              <MaterialIcons 
+                onPress={() => deleteTaskAlert(taskID)} 
+                name="delete" 
+                size={30} 
+                color="#EB2D2D" 
+              />
             </TouchableOpacity>
             <TouchableOpacity onPress={() => router.push('/task-form')}>
-              <MaterialIcons name="edit" size={30} color="black" />
+              <MaterialIcons 
+                name="edit" 
+                size={30} 
+                color="black" 
+              />
             </TouchableOpacity>
           </View>
         </View>

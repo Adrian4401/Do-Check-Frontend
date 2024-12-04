@@ -16,6 +16,7 @@ import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 
 const apiUrl = process.env.EXPO_PUBLIC_API_URL
 
+// Changes
 interface Task {
   Task_ID: number;
   User_ID: number;

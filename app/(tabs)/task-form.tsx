@@ -20,7 +20,7 @@ import { useRouter } from 'expo-router';
 import moment from 'moment';
 
 
-// Changes
+
 const apiUrl = process.env.EXPO_PUBLIC_API_URL;
 
 const data = [
@@ -89,11 +89,11 @@ export default function taskForm() {
     try {
       const response = await axios.post(`${apiUrl}/task/add-task`, {
         User_ID: 1,
-        Task_title: form.title,
-        Task_due_date: formattedDate,
-        Task_desc: form.desc,
-        Task_refresh: false,
-        Task_refresh_rate: null
+        Title: form.title,
+        Due_date: formattedDate,
+        Description: form.desc,
+        Refresh: false,
+        Refresh_rate: null
       });
       if (response.status === 200) {
         console.log('Udalo sie dodac zadanie!')

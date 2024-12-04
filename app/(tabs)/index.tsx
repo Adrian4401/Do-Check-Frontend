@@ -16,12 +16,11 @@ import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 
 const apiUrl = process.env.EXPO_PUBLIC_API_URL
 
-// Changes
 interface Task {
   Task_ID: number;
   User_ID: number;
-  Task_title: string;
-  Task_due_date: string;
+  Title: string;
+  Due_date: string;
 }
 
 export default function HomeScreen() {
@@ -33,7 +32,7 @@ export default function HomeScreen() {
 
   const fetchTasks = async () => {
     try {
-      const response = await axios.get(`${apiUrl}/task/select-task`);
+      const response = await axios.get(`${apiUrl}/task/select-current-tasks`);
       
       if (response.status === 200) {
         setTasks(response.data);
@@ -84,7 +83,7 @@ export default function HomeScreen() {
         <Text>Ładowanie...</Text>
       ) : (
         tasks.map((task) => {
-          const formattedDate = moment(task.Task_due_date).format('DD.MM.YYYY');
+          const formattedDate = moment(task.Due_date).format('DD.MM.YYYY');
           return(
             <TouchableOpacity 
               onPress={() => router.push({ 
@@ -99,7 +98,7 @@ export default function HomeScreen() {
                 style={styles.stickynote}
               >
                 <View style={styles.taskTitleView}>
-                  <Text style={styles.taskTitle}>{task.Task_title}</Text>
+                  <Text style={styles.taskTitle}>{task.Title}</Text>
                 </View>
                 <Text style={{...styles.taskDate, color: Colors[colorScheme ?? 'light'].darkText, shadowColor: Colors[colorScheme ?? 'light'].inputBg}}>{formattedDate}</Text>
               </ImageBackground>

@@ -11,14 +11,14 @@ import { Colors } from '@/constants/Colors';
 import { EmptySection } from '@/components/emptySection';
 import AntDesign from '@expo/vector-icons/AntDesign';
 
-// Changes
+
 const apiUrl = process.env.EXPO_PUBLIC_API_URL
 
 interface Task {
   Task_ID: number;
   User_ID: number;
-  Task_title: string;
-  Task_due_date: string;
+  Title: string;
+  Due_date: string;
 }
 
 export default function Undone() {
@@ -79,7 +79,7 @@ export default function Undone() {
         <Text>Ładowanie...</Text>
       ) : (
         tasks.map((task) => {
-          const formattedDate = moment(task.Task_due_date).format('DD.MM.YYYY');
+          const formattedDate = moment(task.Due_date).format('DD.MM.YYYY');
           return(
             <TouchableOpacity key={task.Task_ID}>
               <ImageBackground
@@ -88,7 +88,7 @@ export default function Undone() {
                 style={styles.stickynote}
               >
                 <View style={styles.taskTitleView}>
-                  <Text style={styles.taskTitle}>{task.Task_title}</Text>
+                  <Text style={styles.taskTitle}>{task.Title}</Text>
                 </View>
                 <Text style={{...styles.taskDate, color: Colors[colorScheme ?? 'light'].darkText, shadowColor: Colors[colorScheme ?? 'light'].inputBg}}>{formattedDate}</Text>
               </ImageBackground>

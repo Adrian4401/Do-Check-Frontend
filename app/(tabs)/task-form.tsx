@@ -25,9 +25,9 @@ const apiUrl = process.env.EXPO_PUBLIC_API_URL;
 
 const data = [
   { label: 'Codziennie', value: '1' },
-  { label: 'Co tydzień', value: '2' },
-  { label: 'Co miesiąc', value: '3' },
-  { label: 'Brak', value: '4' },
+  { label: 'Co tydzień', value: '7' },
+  { label: 'Co miesiąc', value: '30' },
+  { label: 'Brak', value: '0' },
 ];
 
 export default function taskForm() {
@@ -67,6 +67,7 @@ export default function taskForm() {
   const pickDocument = async () => {
     let result = await DocumentPicker.getDocumentAsync({
       copyToCacheDirectory: true,
+      type: 'application/pdf'
     });
 
     console.log(result);
@@ -83,27 +84,77 @@ export default function taskForm() {
   // Leave UTC format, change when is readed from DB
   // console.log('Local Date:', localDate.format());
 
+  // const handleSubmit = async () => {
+  //   const formattedDate = moment(form.date).format('YYYY-MM-DD');
+
+  //   try {
+  //     const response = await axios.post(`${apiUrl}/task/add-task`, {
+  //       User_ID: 1,
+  //       Title: form.title,
+  //       Due_date: formattedDate,
+  //       Description: form.desc,
+  //       Refresh: false,
+  //       Refresh_rate: null
+  //     });
+  //     if (response.status === 200) {
+  //       console.log('Udalo sie dodac zadanie!')
+  //       router.back();
+  //     }
+  //   } catch (error) {
+  //     console.log('Nie udalo sie dodac zadania -> ', error)
+  //     console.log('Dane: title: ', form.title, 'date: ', form.date)
+  //   }
+  // }
+
   const handleSubmit = async () => {
     const formattedDate = moment(form.date).format('YYYY-MM-DD');
+    const formData = new FormData();
+  
+    // Dodaj dane formularza
+    formData.append('User_ID', '1'); // Możesz zastąpić stałą wartość dynamiczną
+    formData.append('Title', form.title);
+    formData.append('Due_date', formattedDate);
+    formData.append('Descript', form.desc || ''); // Jeśli opis jest opcjonalny
+    // formData.append('Refresh', String(0)); // Zmień na wartość dynamiczną, jeśli potrzebne
+    formData.append('Refresh_rate', value || '0');
+  
+    // Dodaj załączniki
+    if (file) {
+      const fileBlob = await fetch(file.uri).then(res => res.blob());
+      formData.append('file', fileBlob, file.name);
+    }
 
+    if (image) {
+      const imageBlob = await fetch(image).then(res => res.blob());
+      const imageName = image.split('/').pop(); // Wyciągnięcie nazwy pliku z URI
+      formData.append('file', imageBlob, imageName); // Dodanie obrazu do pola `file`
+    }
+
+    // Debugowanie: logowanie danych FormData
+    console.log('Logowanie zawartości FormData:');
+    formData.forEach((value, key) => {
+      console.log(`${key}:`, value);
+    });
+  
     try {
-      const response = await axios.post(`${apiUrl}/task/add-task`, {
-        User_ID: 1,
-        Title: form.title,
-        Due_date: formattedDate,
-        Description: form.desc,
-        Refresh: false,
-        Refresh_rate: null
+      const response = await axios.post(`${apiUrl}/task/add-task`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
       });
+  
       if (response.status === 200) {
-        console.log('Udalo sie dodac zadanie!')
+        console.log('Udało się dodać zadanie! ', formData);
         router.back();
+      } else {
+        console.log('Nieoczekiwany status odpowiedzi:', response.status);
       }
     } catch (error) {
-      console.log('Nie udalo sie dodac zadania -> ', error)
-      console.log('Dane: title: ', form.title, 'date: ', form.date)
+      console.log('Nie udało się dodać zadania -> ', error);
+      console.log('Dane wysyłane:', formData);
     }
-  }
+  };
+  
 
   useEffect(() => {
     console.log('Wybrana data i godzina: ', form.date)

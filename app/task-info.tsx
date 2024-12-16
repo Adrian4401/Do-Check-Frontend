@@ -152,7 +152,6 @@ export default function TaskInfo() {
             style={{...styles.finishButton, backgroundColor: Colors[colorScheme ?? 'light'].primary}}>
             <Text style={styles.buttonText}>Zakończ</Text>
           </TouchableOpacity>
-          
         </>
       )}
       

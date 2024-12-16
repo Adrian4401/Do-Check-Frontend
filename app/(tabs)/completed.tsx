@@ -29,25 +29,24 @@ export default function Completed() {
   const [tasksInfo, setTasksInfo] = useState(false);
 
   const fetchTasks = async () => {
+    setTasks([]);
     try {
       const response = await axios.get(`${apiUrl}/task/select-completed-tasks`);
       
       if (response.status === 200) {
         setTasks(response.data);
         setLoading(false);
+        setTasksInfo(false);
       }
       if (response.status === 404) {
         setLoading(false);
+        setTasksInfo(false);
       }
     } catch (error) {
-      const axiosError = error as AxiosError
-
-      if(axiosError.response && axiosError.response.status === 404) {
-        setLoading(false);
-        setTasksInfo(true)
-      } else {
-        console.error('Nie udało się pobrać danych: ', axiosError.message);
-      }
+      const axiosError = error as AxiosError;
+      console.error('Nie udało się pobrać danych: ', axiosError.message);
+      setLoading(false);
+      setTasksInfo(true);
     }
   };
   

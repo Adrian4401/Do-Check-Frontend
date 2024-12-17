@@ -104,23 +104,23 @@ export default function taskForm() {
     formData.append('Descript', form.desc || '');
     // formData.append('Refresh', String(0)); // Zmień na wartość dynamiczną, jeśli potrzebne
     formData.append('Refresh_rate', value || '0');
-  
+
     if (file) {
-      const fileBlob = await fetch(file.uri).then(res => res.blob());
-      formData.append('file', fileBlob, file.name);
-    }
-
-    if (image) {
-      formData.append('file[]', image, imageName);
-    }
-
-    formData.forEach((value, key) => {
-      if (value instanceof Blob) {
-        console.log(`${key}: [Blob]`, value);
-      } else {
-        console.log(`${key}:`, value);
-      }
-    });
+			// @ts-ignore
+			formData.append('file', {
+				uri: file.uri,
+				name: file.name,
+				type: 'application/pdf',
+			})
+		}
+		if (image) {
+			// @ts-ignore
+			formData.append('file', {
+				uri: imageUri,
+				name: imageName,
+				type: 'image/jpeg',
+			})
+		}
 
     console.log('image', image)
 

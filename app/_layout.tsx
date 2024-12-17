@@ -19,7 +19,7 @@ export default function RootLayout() {
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
-  const [logged, setLogged] = useState(false);
+  const [logged, setLogged] = useState(true);
 
   const checkToken = async () => {
     try {
@@ -31,7 +31,7 @@ export default function RootLayout() {
   }
 
   useEffect(() => {
-    const intervalId = setInterval(checkToken, 1000);
+    const intervalId = setInterval(checkToken, 100);
     return () => clearInterval(intervalId);
   }, []);
 

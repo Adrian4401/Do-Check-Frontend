@@ -12,6 +12,7 @@ import { router } from 'expo-router';
 import { useEffect } from 'react';
 import axios, { AxiosError } from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { deleteAllTasksAlert } from '@/hooks/useManageTasks';
 
 
 
@@ -24,17 +25,6 @@ export default function Settings() {
     await AsyncStorage.removeItem("Token");
   }
 
-  const deleteAllTasks = async () => {
-    try {
-      const response = await axios.put(`${apiUrl}/database/delete-everything`);
-      if(response.status === 200) {
-        console.log('Udalo sie usunac wszystkie zadania!');
-      }
-    } catch(error) {
-      console.log('Nie udalo sie usunac zadan: ', error);
-    }
-  }
-
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
@@ -45,7 +35,7 @@ export default function Settings() {
         <ThemedText type="title">Ustawienia</ThemedText>
       </ThemedView>
 
-      <TouchableOpacity onPress={deleteAllTasks} style={{...styles.styledButton, backgroundColor: Colors[colorScheme ?? 'light'].inputBg}}>
+      <TouchableOpacity onPress={deleteAllTasksAlert} style={{...styles.styledButton, backgroundColor: Colors[colorScheme ?? 'light'].inputBg}}>
         <MaterialIcons name="delete" size={30} color={Colors[colorScheme ?? 'light'].primary} />
         <Text style={styles.styledButtonText}>Usuń wszystkie dane</Text>
       </TouchableOpacity>

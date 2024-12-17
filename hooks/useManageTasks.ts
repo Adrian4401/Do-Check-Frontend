@@ -7,7 +7,7 @@ const apiUrl = process.env.EXPO_PUBLIC_API_URL
 const router = useRouter()
 
 
-
+// DELETE ONE TASK
 export const deleteTaskAlert = (taskID: number) => {
     Alert.alert(
         "Usuwanie zadania",
@@ -36,4 +36,27 @@ const deleteTask = async (taskID: number) => {
         console.error('Nie udało się usunąć zadania: ', axiosError.message);
       }
     }
+};
+
+// DELETE ALL TASKS
+export const deleteAllTasksAlert = () => {
+  Alert.alert(
+      "Usuwanie zadań",
+      "Czy na pewno chcesz usunąć wszystkie zadania?",
+      [
+          { text: "Anuluj", style: "cancel" },
+          { text: "Usuń", onPress: () => deleteAllTask() }
+      ]
+  )
+} 
+
+const deleteAllTask = async () => {
+  try {
+    const response = await axios.put(`${apiUrl}/database/delete-everything`);
+    if(response.status === 200) {
+      console.log('Udalo sie usunac wszystkie zadania!');
+    }
+  } catch(error) {
+    console.log('Nie udalo sie usunac zadan: ', error);
+  }
 };

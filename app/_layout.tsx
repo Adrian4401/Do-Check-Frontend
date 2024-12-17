@@ -53,6 +53,7 @@ export default function RootLayout() {
           <Stack.Screen name="sign-in" options={{ headerShown: false }} />
           <Stack.Screen name="+not-found" />
           <Stack.Screen name="task-info" options={{ headerShown: false }} />
+          <Stack.Screen name="task-edit" options={{ headerShown: false }} />
         </Stack>
       ) : (
         <SignIn setLogged={setLogged} />

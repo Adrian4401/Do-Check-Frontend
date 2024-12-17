@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native';
+import React, { StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
@@ -94,7 +94,6 @@ export default function TaskInfo() {
     }
   };
 
-
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
@@ -113,7 +112,11 @@ export default function TaskInfo() {
                 color="#EB2D2D" 
               />
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => router.push('/task-form')}>
+            <TouchableOpacity 
+              onPress={() => router.push({
+                pathname: '/task-edit',
+                params: { Task_ID: taskID.toString() }
+              })}>
               <MaterialIcons 
                 name="edit" 
                 size={30} 

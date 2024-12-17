@@ -19,6 +19,7 @@ import axios from 'axios';
 import { useRouter } from 'expo-router';
 import moment from 'moment';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useSearchParams } from 'expo-router/build/hooks';
 
 
 
@@ -31,23 +32,26 @@ const data = [
   { label: 'Brak', value: '0' },
 ];
 
-export default function taskForm() {
+export default function taskEdit() {
   const router = useRouter();
+  const params = useSearchParams();
+  const taskID = parseInt(params.get('Task_ID') || '0', 10);
   const colorScheme = useColorScheme();
   const [value, setValue] = useState<string | null>(null);
   const [isFocus, setIsFocus] = useState(false);
-  
   const [form, setForm] = useState({
     title: '',
     date: new Date(),
     desc: ''
   })
-
+  const [file, setFile] = useState<{ 
+    uri: string; 
+    name: string 
+    } | null>(null);
   const [image, setImage] = useState<Blob | null>(null);
   const [imageUri, setImageUri] = useState<string | undefined>(undefined);
   const [imageName, setImageName] = useState<string | undefined>(undefined);
-  const [file, setFile] = useState<{ uri: string; name: string } | null>(null);
-
+  
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -98,7 +102,7 @@ export default function taskForm() {
       return;
     }
   
-    formData.append('User_ID', userID || '');
+    formData.append('Task_ID', taskID.toString() || '');
     formData.append('Title', form.title);
     formData.append('Due_date', formattedDate);
     formData.append('Descript', form.desc || '');
@@ -125,30 +129,55 @@ export default function taskForm() {
     console.log('image', image)
 
     try {
-      const response = await axios.post(`${apiUrl}/task/add-task`, formData, {
+      const response = await axios.post(`${apiUrl}/task/update-task-experiment/`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         },
       });
   
       if (response.status === 200) {
-        console.log('Udało się dodać zadanie! ', formData);
+        console.log('Udało się edytowac zadanie! ', formData);
         router.back();
       } else {
         console.log('Nieoczekiwany status odpowiedzi:', response.status);
       }
     } catch (error) {
-      console.log('Nie udało się dodać zadania -> ', error);
+      console.log('Nie udało się edytowac zadania -> ', error);
       console.log('Dane wysyłane:', formData);
     }
   };
   
-
   useEffect(() => {
     console.log('Wybrana data i godzina: ', form.date)
   })
 
+  const fetchTask = async () => {
+    try {
+      const response = await axios.get(`${apiUrl}/task/select-task`, {
+        params: {
+          Task_ID: taskID
+        }
+      });
+      if (response.status === 200 && response.data.length > 0) {
+        const taskData = response.data[0];
+        console.log(taskData);
+        setForm({
+            title: taskData.Title || '',
+            date: taskData.Due_date ? new Date(taskData.Due_date) : new Date(),
+            desc: taskData.Descript || ''
+        })
+      }
+    } catch (error) {
+      console.log('Blad wypisywania zadania: ', error);
+    }
+  };
   
+  useEffect(() => {
+    if (taskID) {
+      fetchTask();
+    }
+  }, [taskID]);
+
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#655ff0', dark: '#655ff0' }}
@@ -156,7 +185,7 @@ export default function taskForm() {
       
       <ThemedView style={styles.titleContainer}>
         <GoBackBtn />
-        <ThemedText type="title">Dodaj zadanie</ThemedText>
+        <ThemedText type="title">Edytuj zadanie</ThemedText>
       </ThemedView>
       
       <View style={styles.basicInfo}>
@@ -279,7 +308,7 @@ export default function taskForm() {
         }
 
         <TouchableOpacity onPress={handleSubmit} style={{...styles.addBtn, backgroundColor: Colors[colorScheme ?? 'light'].primary}}>
-          <Text style={{...styles.addBtnText, color: Colors[colorScheme ?? 'light'].lightText}}>Dodaj</Text>
+          <Text style={{...styles.addBtnText, color: Colors[colorScheme ?? 'light'].lightText}}>Edytuj</Text>
         </TouchableOpacity>
 
       </View>

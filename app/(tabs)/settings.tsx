@@ -28,8 +28,8 @@ export default function Settings() {
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={<Ionicons size={250} name="settings-sharp" style={styles.headerImage} />
-      }>
+      headerImage={<Ionicons size={250} name="settings-sharp" style={styles.headerImage} />}
+      >
 
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title">Ustawienia</ThemedText>

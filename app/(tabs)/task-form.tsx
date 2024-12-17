@@ -102,17 +102,8 @@ export default function taskForm() {
     formData.append('Title', form.title);
     formData.append('Due_date', formattedDate);
     formData.append('Descript', form.desc || '');
-    // formData.append('Refresh', String(0)); // Zmień na wartość dynamiczną, jeśli potrzebne
     formData.append('Refresh_rate', value || '0');
 
-    if (file) {
-			// @ts-ignore
-			formData.append('file', {
-				uri: file.uri,
-				name: file.name,
-				type: 'application/pdf',
-			})
-		}
 		if (image) {
 			// @ts-ignore
 			formData.append('file', {
@@ -240,14 +231,14 @@ export default function taskForm() {
             backgroundColor: Colors[colorScheme ?? 'light'].inputBg,
             borderBottomColor: Colors[colorScheme ?? 'light'].primary
           }}>
-          <TouchableOpacity onPress={pickDocument} style={styles.typeBtn}>
+          {/* <TouchableOpacity onPress={pickDocument} style={styles.typeBtn}>
             <Ionicons name="document-attach" size={24} color="black" />
             <Text style={styles.attachLabel}>Dodaj załączniki</Text>
           </TouchableOpacity>
-          <View style={{...styles.line, backgroundColor: Colors[colorScheme ?? 'light'].primary}} />
+          <View style={{...styles.line, backgroundColor: Colors[colorScheme ?? 'light'].primary}} /> */}
           <TouchableOpacity onPress={pickImage} style={styles.typeBtn}>
             <Ionicons name="image" size={24} color="black" />
-            <Text style={styles.attachLabel}>Dodaj zdjęcia</Text>
+            <Text style={styles.attachLabel}>Dodaj zdjęcie</Text>
           </TouchableOpacity>
         </TouchableOpacity>
 

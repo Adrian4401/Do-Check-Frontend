@@ -61,12 +61,16 @@ export default function taskEdit() {
     });
   
     if (!result.canceled && result.assets) {
+      setImage(null);
+      setImageUri(undefined);
+      setImageName(undefined);
       const uri = result.assets[0].uri;
       const name = uri.split('/').pop() || 'default.jpg';
       const blob = await fetch(uri).then(res => res.blob());
       setImage(blob);
       setImageName(name);
       setImageUri(uri);
+      console.log(uri);
     }
   };
 
@@ -106,17 +110,16 @@ export default function taskEdit() {
     formData.append('Title', form.title);
     formData.append('Due_date', formattedDate);
     formData.append('Descript', form.desc || '');
-    // formData.append('Refresh', String(0)); // Zmień na wartość dynamiczną, jeśli potrzebne
     formData.append('Refresh_rate', value || '0');
-  
-    if (file) {
-      const fileBlob = await fetch(file.uri).then(res => res.blob());
-      formData.append('file', fileBlob, file.name);
-    }
 
     if (image) {
-      formData.append('file[]', image, imageName);
-    }
+			// @ts-ignore
+			formData.append('file', {
+				uri: imageUri,
+				name: imageName,
+				type: 'image/jpeg',
+			})
+		}
 
     formData.forEach((value, key) => {
       if (value instanceof Blob) {
@@ -129,15 +132,14 @@ export default function taskEdit() {
     console.log('image', image)
 
     try {
-      const response = await axios.post(`${apiUrl}/task/update-task-experiment/`, formData, {
+      const response = await axios.put(`${apiUrl}/task/update-task-experiment/`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         },
       });
-  
       if (response.status === 200) {
         console.log('Udało się edytowac zadanie! ', formData);
-        router.back();
+        router.replace('/(tabs)');
       } else {
         console.log('Nieoczekiwany status odpowiedzi:', response.status);
       }
@@ -166,6 +168,9 @@ export default function taskEdit() {
             date: taskData.Due_date ? new Date(taskData.Due_date) : new Date(),
             desc: taskData.Descript || ''
         })
+        setImageName(taskData.Name);
+        setImageUri(taskData.Path);
+        setImage(taskData.Path);
       }
     } catch (error) {
       console.log('Blad wypisywania zadania: ', error);
@@ -269,11 +274,11 @@ export default function taskEdit() {
             backgroundColor: Colors[colorScheme ?? 'light'].inputBg,
             borderBottomColor: Colors[colorScheme ?? 'light'].primary
           }}>
-          <TouchableOpacity onPress={pickDocument} style={styles.typeBtn}>
+          {/* <TouchableOpacity onPress={pickDocument} style={styles.typeBtn}>
             <Ionicons name="document-attach" size={24} color="black" />
             <Text style={styles.attachLabel}>Dodaj załączniki</Text>
           </TouchableOpacity>
-          <View style={{...styles.line, backgroundColor: Colors[colorScheme ?? 'light'].primary}} />
+          <View style={{...styles.line, backgroundColor: Colors[colorScheme ?? 'light'].primary}} /> */}
           <TouchableOpacity onPress={pickImage} style={styles.typeBtn}>
             <Ionicons name="image" size={24} color="black" />
             <Text style={styles.attachLabel}>Dodaj zdjęcia</Text>
@@ -299,10 +304,15 @@ export default function taskEdit() {
           <>
             <View style={styles.attachContainer}>
               <View style={styles.attachHeader}>
-                <Text style={{...styles.themedText, marginTop: 0, color: Colors[colorScheme ?? 'light'].text}}>Wybrane zdjęcia</Text>
+                <Text style={{...styles.themedText, marginTop: 0, color: Colors[colorScheme ?? 'light'].text}}>Wybrane zdjęcie</Text>
                 <Text onPress={clearImage} style={{...styles.clearBtn, color: Colors[colorScheme ?? 'light'].text}}>Wyczyść</Text>
               </View>
-              <Image source={{ uri: imageUri }} style={styles.image} />
+              <Image 
+                source={{ 
+                  // uri: `${apiUrl}/${imageUri?.replace('\\', '/')}` 
+                  uri: imageUri?.startsWith('file://') ? imageUri : `${apiUrl}/${imageUri?.replace('\\', '/')}`
+                }} 
+                style={styles.image} />
             </View>
           </>
         }

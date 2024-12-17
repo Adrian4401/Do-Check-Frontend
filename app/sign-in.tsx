@@ -3,23 +3,39 @@ import { StyleSheet, SafeAreaView, View, Image, Text, TextInput, TouchableOpacit
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { useState } from 'react';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
+
+const apiUrl = process.env.EXPO_PUBLIC_API_URL
 
 type SignInProps = {
   setLogged: (value: boolean) => void;
 }
 
-export default function SignIn({ setLogged } : SignInProps) {
+export default function SignIn(props: SignInProps) {
   const colorScheme = useColorScheme();
   const [form, setForm] = useState({
-    email: '',
+    username: '',
     password: ''
   })
 
-  const checkLogin = () => {
-    if(form.email === 'admin123' && form.password === 'admin123')
-      setLogged(true)
+  const handleLogin = async () => {
+    try {
+      const response = await axios.post(`${apiUrl}/auth/login`, {
+        username: form.username,
+        password: form.password
+      })
+      if(response.status === 200) {
+        console.log('Udalo sie zalogowac: ', response.data);
+        await AsyncStorage.setItem("Token", response.data.token);
+        await AsyncStorage.setItem("UserID", JSON.stringify(response.data.user));
+        props.setLogged(true);
+      }
+    } catch(error) {
+      console.log('Nie udalo sie zalogowac: ', error);
+    }
   }
 
 
@@ -46,8 +62,8 @@ export default function SignIn({ setLogged } : SignInProps) {
                 keyboardType='email-address'
                 placeholder='Wpisz nazwę użytkownika...'
                 placeholderTextColor={Colors[colorScheme ?? 'light'].lightText}
-                value={form.email}
-                onChangeText={email => setForm({...form, email})}
+                value={form.username}
+                onChangeText={username => setForm({...form, username})}
               />
             </View>
             <View style={styles.input}>
@@ -68,7 +84,7 @@ export default function SignIn({ setLogged } : SignInProps) {
         
 
         <View style={styles.login}>
-          <TouchableOpacity onPress={() => checkLogin()} style={{...styles.loginBtn, backgroundColor: Colors[colorScheme ?? 'light'].primary}}>
+          <TouchableOpacity onPress={handleLogin} style={{...styles.loginBtn, backgroundColor: Colors[colorScheme ?? 'light'].primary}}>
             <Text style={{...styles.loginBtnText, color: Colors[colorScheme ?? 'light'].secondary}}>Zaloguj</Text>
           </TouchableOpacity>
         </View>

@@ -11,6 +11,7 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
 import { EmptySection } from '@/components/emptySection';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 
@@ -34,7 +35,6 @@ export default function HomeScreen() {
     setTasks([]);
     try {
       const response = await axios.get(`${apiUrl}/task/select-current-tasks`);
-      
       if (response.status === 200) {
         setTasks(response.data);
         setLoading(false);
@@ -46,6 +46,10 @@ export default function HomeScreen() {
       setLoading(false);
       setTasksInfo(true);
     }
+    const token = await AsyncStorage.getItem("Token");
+    const userId = await AsyncStorage.getItem("UserID");
+
+    console.log("Token: ", token, " | UserID: ", userId);
   };
   
   useEffect(() => {

@@ -9,9 +9,9 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
 import { router } from 'expo-router';
-import { setLogged } from '../_layout';
 import { useEffect } from 'react';
 import axios, { AxiosError } from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 
@@ -20,9 +20,8 @@ const apiUrl = process.env.EXPO_PUBLIC_API_URL
 export default function Settings() {
   const colorScheme = useColorScheme();
 
-  const logout = () => {
-    // setLogged(false);
-    router.push('/sign-in');
+  const logout = async () => {
+    await AsyncStorage.removeItem("Token");
   }
 
   const deleteAllTasks = async () => {
